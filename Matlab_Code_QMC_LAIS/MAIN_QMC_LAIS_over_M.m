@@ -20,7 +20,7 @@ mu_tot = proposal_chains_mh(N, T, sig_prop, typeTar); % d x (N*T)
 
 % Replications and x-axis
 R     = 20;
-MList = floor(1.8.^(1:8));
+MList = floor(1.8.^(1:9));
 Ntot  = MList * N * T;
 
 % Storage
@@ -52,32 +52,15 @@ for r = 1:R
     end
 end
 
+save('cache_LAIS_over_M.mat','MList','Ntot','ErrDM','ErrTQ','N','T','sig_prop','sig_lower_layer','typeTar','R','d','mu_true','mu_tot')
+
+%% ---- Plot: error vs total samples (log–log, LaTeX labels, no title) ----
+
+% load('cache_LAIS_over_M.mat','MList','Ntot','ErrDM','ErrTQ','N','T','sig_prop','sig_lower_layer','typeTar','R','d','mu_true','mu_tot')
+
 % Geometric means and bands
 [DM_g, DM_lo, DM_hi] = geom_stats(ErrDM);
 [TQ_g, TQ_lo, TQ_hi] = geom_stats(ErrTQ);
-
-% Plot: Error vs total samples (log–log, with shadeband)
-myfig = figure('Position',[200,200,500,400]);
-delt = 0.01;
-ax = axes('Units','normalized','Position',[7*delt, 7*delt, 1-9*delt, 1-9*delt]);
-hold(ax,'on'); grid(ax,'on'); set(ax,'XScale','log','YScale','log');
-
-shadeband(Ntot, DM_lo, DM_hi, [0 0 1]);
-shadeband(Ntot, TQ_lo, TQ_hi, [1 0 0]);
-
-loglog(Ntot, DM_g, 'b', 'LineWidth', 2);
-loglog(Ntot, TQ_g, 'r', 'LineWidth', 2);
-loglog(Ntot, 50  * Ntot.^(-0.5), 'k--', 'LineWidth', 1.5);
-loglog(Ntot, 500 * Ntot.^(-1),   'k-.', 'LineWidth', 1.5);
-
-h1 = legend('DM-LAIS','TQMC-LAIS','$\mathcal{O}(N^{-1/2})$','$\mathcal{O}(N^{-1})$');
-set(h1,'Interpreter','latex','Location','SouthWest','Fontsize',15)
-set(myfig,'Units','Inches'); pos = get(myfig,'Position');
-set(myfig,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)])
-print(myfig,'Lais_with_QMC_over_M','-dpdf','-r0')
-
-
-%% ---- Plot: error vs total samples (log–log, LaTeX labels, no title) ----
 myfig = figure('Position',[200,200,500,400]);
 delt = 0.01;
 ax = axes('Units','normalized','Position',[13*delt, 13*delt, 1-14*delt, 1-14*delt]);
@@ -92,7 +75,7 @@ loglog(Ntot, 50  * Ntot.^(-0.5), 'k--', 'LineWidth', 1.5);
 loglog(Ntot, 500 * Ntot.^(-1),   'k-.', 'LineWidth', 1.5);
 
 xlabel('$N = C \cdot T \cdot M$', 'Interpreter','latex','FontSize',12);
-ylabel('$\|\hat{\mu} - \mu_{\textup{true}}\|_{2}$', 'Interpreter','latex','FontSize',12);
+ylabel('$\| \hat{S}^{\textup{snIS}}[f] - \mathbf{E}_{\mathbf{P}_{\textup{tar}}}[f]\|$', 'Interpreter','latex','FontSize',12);
 
 h1 = legend('DM-LAIS','TQMC-LAIS','$\mathcal{O}(N^{-1/2})$','$\mathcal{O}(N^{-1})$');
 set(h1,'Interpreter','latex','Location','SouthWest','Fontsize',15)

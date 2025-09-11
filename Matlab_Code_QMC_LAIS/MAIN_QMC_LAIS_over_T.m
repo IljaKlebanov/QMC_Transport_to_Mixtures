@@ -53,11 +53,16 @@ for r = 1:R
     end
 end
 
+% save('cache_LAIS_over_T.mat','TList','Ntot','ErrDM','ErrTQ','N','M0','sig_prop','sig_lower_layer','typeTar','R','d','mu_true')
+
+
+%% ---- Plot: error vs total samples (log–log, LaTeX labels, no title) ----
+% load('cache_LAIS_over_T.mat','TList','Ntot','ErrDM','ErrTQ','N','M0','sig_prop','sig_lower_layer','typeTar','R','d','mu_true')
+
 % Geometric means and ±1σ multiplicative bands (log-space)
 [DM_g, DM_lo, DM_hi] = geom_stats(ErrDM);
 [TQ_g, TQ_lo, TQ_hi] = geom_stats(ErrTQ);
 
-%% ---- Plot: error vs total samples (log–log, LaTeX labels, no title) ----
 myfig = figure('Position',[200,200,500,400]);
 delt = 0.01;
 ax = axes('Units','normalized','Position',[13*delt, 13*delt, 1-14*delt, 1-14*delt]);
@@ -73,7 +78,7 @@ loglog(Ntot, 50  * Ntot.^(-0.5), 'k--', 'LineWidth', 1.5);
 loglog(Ntot, 500 * Ntot.^(-1),   'k-.', 'LineWidth', 1.5);
 
 xlabel('$N = C \cdot T \cdot M$', 'Interpreter','latex','FontSize',12);
-ylabel('$\|\hat{\mu} - \mu_{\textup{true}}\|_{2}$', 'Interpreter','latex','FontSize',12);
+ylabel('$\| \hat{S}^{\textup{snIS}}[f] - \mathbf{E}_{\mathbf{P}_{\textup{tar}}}[f]\|$', 'Interpreter','latex','FontSize',12);
 
 h1 = legend('DM-LAIS','TQMC-LAIS','$\mathcal{O}(N^{-1/2})$','$\mathcal{O}(N^{-1})$');
 set(h1,'Interpreter','latex','Location','SouthWest','Fontsize',15)
@@ -111,7 +116,7 @@ end
 end
 
 function err = dm_lais_full_error(mu_tot, M, sigma, typeTar, mu_true)
-d = size(mu_tot,1); J = size(mu_tot,2); %#ok<NASGU>
+d = size(mu_tot,1); J = size(mu_tot,2);
 Z = sigma * randn(d, M*size(mu_tot,2));
 X = zeros(d, M*size(mu_tot,2));
 for j = 1:size(mu_tot,2)

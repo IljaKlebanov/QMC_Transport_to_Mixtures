@@ -7,7 +7,7 @@ rng default
 dim_list = [2, 5, 20, 50];
 J_list   = [2, 5, 20];
 N_list   = 2.^(2:13);
-M        = 20;
+M        = 20;              % number of runs
 
 % Storage
 Mixtures = cell(numel(dim_list), numel(J_list));

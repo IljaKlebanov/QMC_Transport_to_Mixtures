@@ -1,4 +1,4 @@
-function MAIN_ConvergenceRateMixtures
+% function MAIN_ConvergenceRateMixtures
 % Convergence of transported MC, transported qMC, and transported sparse grids
 % for three 2D test integrands under a fixed Gaussian mixture.
 
@@ -29,6 +29,7 @@ mixture.B = B;
 % Reference expectation via large per-component sampling
 IntList      = zeros(num_func, numberGauss);
 num_samp_ref = 30000000;
+
 for j = 1:numberGauss
     Yj = B(:,:,j) * randn(2, num_samp_ref) + a(:,j);
     IntList(:,j) = mean(func(Yj(1,:), Yj(2,:)), 2);
@@ -44,7 +45,7 @@ NSparseList = floor(linspace(1.2, 5.3, 15).^3);
 
 
 % Replicated runs for MC and TQMC
-R = 50;
+R = 20;
 ErrMC_runs  = zeros(num_func, numel(NList), R);
 ErrQMC_runs = zeros(num_func, numel(NList), R);
 
@@ -91,9 +92,11 @@ NList_Rate = NList(2:end);
 prefactors = [3, 0.2; 20, 2; 0.3, 0.03];
 delt = 0.005;
 
+%%
+
 for f = 1:num_func
     myfig = figure('Position', [200, 200, 520, 520]);
-    ax = axes('Units','normalized','Position',[13*delt, 13*delt, 1-18*delt, 1-18*delt]);
+    ax = axes('Units','normalized','Position',[23*delt, 21*delt, 1-24*delt, 1-22*delt]);
     hold(ax, 'on'); grid(ax, 'on'); set(ax, 'XScale','log','YScale','log');
 
     % Colors
@@ -115,10 +118,10 @@ for f = 1:num_func
     hRate1 = loglog(NList_Rate, prefactors(f,1) ./ sqrt(NList_Rate), 'k-.', 'LineWidth', 1.5);
     hRate2 = loglog(NList_Rate, prefactors(f,2) * (log(NList_Rate).^2) ./ NList_Rate, 'k--', 'LineWidth', 1.5);
 
-    xlabel('N'); ylabel('|error|');
+    xlabel('$N$','Interpreter','latex','FontSize', 15); ylabel('absolute integration error','Interpreter','latex','FontSize', 15);
     h1 = legend([hMC hQMC hSG hRate1 hRate2], ...
-        'MC (geom. mean)', 'TQMC (geom. mean)', 'TSG', ...
-        '$\mathcal{O}(N^{-1/2})$', '$\mathcal{O}(N^{-1} (\\log N)^d)$');
+        'MC', 'TQMC', 'TSG', ...
+        '$\mathcal{O}(N^{-1/2})$', '$\mathcal{O}(N^{-1} (\log N)^d)$');
     set(h1, 'Interpreter','latex', 'Location','SouthWest', 'FontSize', 18);
 
     set(myfig,'Units','Inches');
@@ -128,5 +131,5 @@ for f = 1:num_func
 end
 
 toc
-end
+% end
 

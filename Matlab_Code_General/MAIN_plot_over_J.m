@@ -10,23 +10,28 @@ tic
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % SETUP FOR COSTLY INTEGRAND:
-% fun_scalar = make_costly_func_stiff_vdp_int();
-% K = 7;
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SETUP FOR CHEAP INTEGRAND:
-fun_scalar = @(y) cos(0.3 + sum(y)/numel(y));
-K = 10;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+fun_scalar = make_costly_func_stiff_vdp_int();
+K = 7;
 % produce_cache_for_plot_over_J(K)
 
-S = load('cache_for_plot_over_J.mat', 'd','N','J_list','M','Mixtures','Y_qmc','T_transport');
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SETUP FOR CHEAP INTEGRAND:
+% fun_scalar = @(y) cos(0.3 + sum(y)/numel(y));
+% K = 9;
+% produce_cache_for_plot_over_J(K)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 
+
+S = load('cache_for_plot_over_J_with_K_7.mat', 'd','N','J_list','M','Mixtures','Y_qmc','T_transport');
+% S = load('cache_for_plot_over_J_with_K_9.mat', 'd','N','J_list','M','Mixtures','Y_qmc','T_transport');
+
 d = S.d; N = S.N; J_list = S.J_list; M = S.M;
 Mixtures = S.Mixtures; Y_qmc = S.Y_qmc; T_transport = S.T_transport;
 
 
 
-% Reference via TQMC with 1000 transported points (excluded from runtime)
+% Reference via TQMC with 2^(K+2) transported points (excluded from runtime)
 N_ref = 2^(K+2);
 
 RelErr_MC   = zeros(1, numel(J_list));
@@ -41,7 +46,9 @@ for ij = 1:numel(J_list)
     mix = Mixtures{ij};
 
     % Reference (not timed)
+    tic
     [Y_ref, ~] = transport_points(mix, 'qMC', N_ref);
+    toc
     I_true     = mean(apply_fun_cols(fun_scalar, Y_ref));
 
     % MC: M runs
